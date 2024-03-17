@@ -1,0 +1,3 @@
+C:/Users/taxy/CLionProjects/scary linked list/cmake-build-debug/CMakeFiles/linkedLists.dir
+C:/Users/taxy/CLionProjects/scary linked list/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/taxy/CLionProjects/scary linked list/cmake-build-debug/CMakeFiles/rebuild_cache.dir

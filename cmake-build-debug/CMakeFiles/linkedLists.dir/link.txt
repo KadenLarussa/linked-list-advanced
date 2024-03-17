@@ -1,0 +1,3 @@
+"C:\Users\taxy\AppData\Local\Programs\CLion Nova\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\linkedLists.dir/objects.a
+C:\Users\taxy\AppData\Local\Programs\CLIONN~1\bin\mingw\bin\ar.exe qc CMakeFiles\linkedLists.dir/objects.a @CMakeFiles\linkedLists.dir\objects1.rsp
+C:\Users\taxy\AppData\Local\Programs\CLIONN~1\bin\mingw\bin\G__~1.EXE -g -Wl,--whole-archive CMakeFiles\linkedLists.dir/objects.a -Wl,--no-whole-archive -o linkedLists.exe -Wl,--out-implib,liblinkedLists.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\linkedLists.dir\linkLibs.rsp
