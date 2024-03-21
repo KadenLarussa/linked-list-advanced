@@ -8,11 +8,12 @@
 class node {
 public:
   std::string data;
-  node *next;
+  node *next{};
 };
 
 class linkedList {
   node *front;
+  node *index[26]{};
 
 public:
   int getLetVal(char ch) {
@@ -21,17 +22,15 @@ public:
 
   long nameToNumber(const std::string &name) {
     long num = 0;
-    for (int i = 0; i < 3; ++i) {
-      num *= 26;
-      if (i < name.length()) {
-        num += getLetVal(name[i]);
-      }
+    int len = std::min(3, static_cast<int>(name.length()));
+    for (int i = 0; i < len; ++i) {
+      num += getLetVal(name[i]) * std::pow(26, 2 - i);
     }
     return num;
   }
 
-
   linkedList() : front(nullptr) {
+    for (auto &i: index) i = nullptr;
   }
 
   node *makeNode(const std::string &n) {
@@ -62,14 +61,20 @@ public:
 
   void insertSorted(const std::string &n) {
     node *newNode = makeNode(n);
+    int letterIndex = tolower(n[0]) - 'a';
+
     if (front == nullptr || nameToNumber(n) < nameToNumber(front->data)) {
       newNode->next = front;
       front = newNode;
+      if (index[letterIndex] == nullptr || index[letterIndex]->data > n) {
+        index[letterIndex] = newNode;
+      }
     } else {
       node *prev = findSpot(n);
-      if (prev != nullptr) {
-        newNode->next = prev->next;
-        prev->next = newNode;
+      newNode->next = prev->next;
+      prev->next = newNode;
+      if (index[letterIndex] == nullptr || index[letterIndex]->data > n) {
+        index[letterIndex] = newNode;
       }
     }
   }
@@ -77,32 +82,47 @@ public:
   void deleteNode(const std::string &n) {
     if (front == nullptr) return;
 
+    int letterIndex = tolower(n[0]) - 'a';
+
+
     if (nameToNumber(front->data) == nameToNumber(n)) {
       node *temp = front;
       front = front->next;
+      // Update index if the deleted node was the first of its letter
+      if (index[letterIndex] == temp) {
+        index[letterIndex] = (front != nullptr && tolower(front->data[0]) == letterIndex + 'a') ? front : nullptr;
+      }
       delete temp;
-      return;
-    }
+    } else {
+      node *prev = nullptr;
+      node *curr = front;
+      while (curr != nullptr && nameToNumber(curr->data) != nameToNumber(n)) {
+        prev = curr;
+        curr = curr->next;
+      }
 
-    node *prev = nullptr;
-    node *curr = front;
-    while (curr != nullptr && nameToNumber(curr->data) != nameToNumber(n)) {
-      prev = curr;
-      curr = curr->next;
-    }
+      if (curr == nullptr) {
+        std::cout << "Not Found!" << std::endl;
+        return;
+      }
 
-    if (curr == nullptr) {
-      std::cout << "Node not found." << std::endl;
-      return;
-    }
 
-    prev->next = curr->next;
-    delete curr;
+      if (index[letterIndex] == curr) {
+        index[letterIndex] = (curr->next != nullptr && tolower(curr->next->data[0]) == letterIndex + 'a')
+                               ? curr->next
+                               : nullptr;
+      }
+
+      // Delete the node
+      prev->next = curr->next;
+      delete curr;
+    }
   }
+
 
   void readFile() {
     std::string fileName;
-    std::cout << "Enter file name: ";
+    std::cout << "Enter file name (eg \"names.txt\"): ";
     std::cin >> fileName;
     std::ifstream file(fileName);
     std::string name;
@@ -117,24 +137,20 @@ public:
   }
 
   void printNamesStartingWith(char letter) {
-    if (front == nullptr) {
-      std::cout << "The list is empty." << std::endl;
+    letter = tolower(letter);
+    int letterIndex = letter - 'a';
+
+    if (index[letterIndex] == nullptr) {
+      std::cout << "No names starting with '" << letter << "' found." << std::endl;
       return;
     }
+    node *curr = index[letterIndex];
 
-    node *current = front;
-    bool found = false;
-    while (current != nullptr) {
-      if (tolower(current->data[0]) == tolower(letter)) {
-        std::cout << current->data << std::endl;
-        found = true;
-      }
-      current = current->next;
+    while (curr != nullptr && tolower(curr->data[0]) == letter) {
+      std::cout << curr->data << " ";
+      curr = curr->next;
     }
-
-    if (!found) {
-      std::cout << "No names starting with '" << letter << "' found." << std::endl;
-    }
+    std::cout << std::endl;
   }
 
   int getLength() {
